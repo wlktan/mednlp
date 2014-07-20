@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>about</title>
+        <link rel="stylesheet" type="text/css" href="wlktan.css" />
+    </head>
+    <body>
+        <!-- Begin Wrapper -->
+        <div id="wrapper">
+            <div id="header"><script language="javascript" type="text/javascript" src="header.txt"></script>
+                <h1><a href="/mednlp/index.html">Statistical Natural Language Processing in Radiology Reports</a></h1><h2 style="font-size:20px">This webpage is created to document and share our progress in Radiology NLP.</h2></div>
+            
+            <div id="menu">
+                <ul>
+                    <li><a href="/mednlp/index.html">Home</a></li>
+                    <li> | </li>
+                    <li><a href="/mednlp/news.html">Progress</a></li>
+                    <ul class="submenu">
+                        <li><a href="/mednlp/news.html">News</a></li>
+                        <li><a href="/mednlp/code.html">Code</a></li>
+                        <li><a href="/mednlp/results.html">Results</a></li>
+                    </ul>
+                    <li> | </li>
+                    <li><a href="/mednlp/paper.html">Literature Review</a></li>
+                    <li> | </li>
+                    <li><a href="/mednlp/tools.html">Resources</a></li>
+                    <li> | </li>
+                    <li><a class="currentpage" href="/mednlp/about.html">About</a></li>
+                </ul>
+            </div>
+            
+            <div id="centercolumn">
+            </br><h2>Hello</h2></br>
+                
+            <p>I am a <a href="http://staff.washington.edu/wlktan/" target="_blank">second year Biostatistics PhD student</a> at the University of Washington. I am interested the intersection of categorical and longitudinal data, and issues in high-dimensional space, especially in the context of Electronic Medical Records (EMR). Right now I work with <a href="http://faculty.washington.edu/heagerty/" target="_blank">Patrick Heagerty</a> as a Research Assistant on statistical Natural Language Processing (NLP) in radiology text reports.</p></br>
+                
+            <h2>Translating Bioinformatics to Biostatistics</h2></br>
+            <p><i>We like each other, and our work overlap often. However some terms they use, we just don't understand. Here are some commonly used Bioinformatics terms and their equivalent definitions in statistics:</i></p></br>
+        
+            <div class="listitem">Precision</div>
+             <div class="section">Positve Predictive Value (PPV)</div>
+            <div class="listitem">Recall</div>
+            <div class="section">Sensitivity</div>
+           <div class="listitem">F-score (F1)</div>
+           <div class="section">weighted average of precision and recall.
+             Ranges between 0 and 1 with 1 being the best score.</div></br>
+
+            <h2>What happens when you say no?</h2></br>
+            <p><i>a.k.a. the effect of negation in Error Analysis</i></p></br>
+            
+            
+            <div class="section">This is how a classical 2 by 2 table looks like:</div>
+            <div class="img"><img src="2by2.jpg" alt="2x2 table classic"></div></br>
+            
+            <div class="section">If there is negation, but we don't capture it, here's an example of how our naive perception of a dataset might look like:</div>
+            <div class="img"><img src="withoutnegation.jpg" alt="2x2 table without negation"></div></br>
+            
+            <div class="section">When in reality, this table represents what our dataset <i>REALLY</i> looks like:</div>
+            <div class="img"><img src="withnegation.jpg" alt="2x2 table with negation"></div></br>
+            
+            <div class="messagebox">Some notes and justifications about this phenomena:</br>
+            <ul>
+            <li>Number of diseased/no diseased (Gold Standard) stays constant as it is predetermined by the Gold Standard.</li>
+            <li>Number of test positive/test negative (Gold Standard) changes in the presences of a good negation detection algorithm.</li>
+            <li>The good negation detection algorithm moves outcomes in FP cell to TN cell.</li>
+            <li>Thus a good negation detection algorithm will increase predictability of model in general.</li></ul></div></br></br>
+               
+        </div> <!-- Enter centercolumn -->
+            
+        <div id="footer"> This website is run and maintained by <a href="http://staff.washington.edu/wlktan/" target="_blank">Katherine Tan</a>, UW BIOST graduate student. Email wlktan {at} uw {dot} edu for questions or comments.</div>
+            
+        </div>
+        <!-- End Wrapper -->
+    </body>
+</html>

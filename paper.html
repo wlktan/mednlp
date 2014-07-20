@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Journal of Biomedical Informatics</title>
+<link rel="stylesheet" type="text/css" href="wlktan.css" />
+</head>
+<body>
+<!-- Begin Wrapper -->
+<div id="wrapper">
+    <div id="header"><script language="javascript" type="text/javascript" src="header.txt"></script>
+    <h1><a href="/mednlp/index.html">Statistical Natural Language Processing in Radiology Reports</a></h1><h2 style="font-size:20px">This webpage is created to document and share our progress in Radiology NLP.</h2></div>
+
+  <div id="menu">
+    <ul>
+        <li><a href="/mednlp/index.html">Home</a></li>
+        <li> | </li>
+        <li><a href="/mednlp/news.html">Progress</a></li>
+        <ul class="submenu">
+            <li><a href="/mednlp/news.html">News</a></li>
+            <li><a href="/mednlp/code.html">Code</a></li>
+            <li><a href="/mednlp/results.html">Results</a></li>
+        </ul>
+        <li> | </li>
+        <li><a class="currentpage" href="/mednlp/paper.html">Literature Review</a></li>
+        <li> | </li>
+        <li><a href="/mednlp/tools.html">Resources</a></li>
+        <li> | </li>
+        <li><a href="/mednlp/about.html">About</a></li>
+    </ul>
+ </div>
+  
+  <div id="centercolumn">
+      <center></br><a style="font-size:22px;font-family:Verdana;color:gray" href="http://www.sciencedirect.com/science/article/pii/S1532046413000038" target="_blank">A text processing pipeline to extract recommendations from radiology reports</a></br><i>by Yetisgen-Yildiz et. all</i></center></br>
+      <div class="img"><img src="nlp.jpg" alt="Natural Language Processing"></div></br>
+    <h2>Summary of article</h2></br>
+    <p>Text processing approach based on natural language processing (NLP) and machine learning to identify sentences that involve clinically important recommendation information in radiology reports</p></br>
+    
+    <h2>Existing methods</h2></br>
+    <div class="listitem">MedLEE</div>
+    <div class="section"><ul><li>Extracts and structures clinical information from radiology report text</li><li>Translates clinical information to terms in a controlled vocabulary</li><li>Translates clinical information accessed by further automated procedures</li></ul></div></br>
+    
+    <div class="listitem">SAPPHIRE</div>
+    <div class="section"><ul><li>Matches text to concepts in the <a href="http://www.nlm.nih.gov/research/umls/" target="_blank">Unified Medical Language System (UMLS)</a> Metathesaurus</li><li>Indexes radiology reports automatically</li><li>Develop clinical image repositories that can be used for patient care and medical education</li><li><b>Note:</b> One of the precursors to <a href="http://metamap.nlm.nih.gov" target="_blank">MetaMap</a></li></ul></div></br>
+    
+    <div class="listitem">Lexicon Mediated Entropy Reduction (LEXIMER)</div>
+    <div class="section"><ul><li>Identifies reports that include clinically important findings and recommendations for subsequent action</li><li>Black box approach</li></ul></div></br></br>
+    
+    <h2>Pipeline</h2></br>
+    <div class="img"><img src="pipeline.jpg" alt="Paper pipeline"></div></br>
+    <center>Disclaimer: I will use the word <b>feature</b> over and over again in explaining; this just means <b>variable</b> in <i>Bioinformatics</i> speak.</center></br></br>
+    
+    <h3>Section segmentation</h3>
+    <div class="section"><ul><li>Divides radiology report into 11 main sections</li><li>Classifier operates at line level instead of sentence level since content of clinical records tends to be fragmentary and list based.</li></ul></div></br>
+    
+    <h5>Pre-processing step: Create list of sections by randomly selecting small subset of reports</h5></br>
+    <div class="messagebox"><ol><li>Construct ontology of section categories</li></br><li>Randomly select reports from corpus</li></br><li>Annotate section boundaries</li></br><li>Assign each section a category from ontology</li></br><li>Group sections:<ul><p style="text-indent:2em"><li>Similar sections together</li><li>Rare sections in catch-all category</li></p></ul></ol></div></br>
+    
+    <h5>First step post-processing: Section Segmentation</h5></br>
+    <div class="messagebox"><ol><li>Label each line with text and tag features:<ul><li>B (beginning of section)</li><li>I (inside of section), or</li><li>O (outside of section) tags</li></ul></li></br><li>Unlabeled sections passed on to second step (Section Classification) and labeled with section category according to features</li></ol></div></br>
+    <table><caption>Table 1: Section Segmentation</caption>
+        <tr><th>Type</th><th>Features</th></tr>
+        <tr><td>Text features</td><td>isAllCaps, isTitleCaps, containsNumber, beginsWithNumber, numTokens, numPreBlanklines, numPostBlanklines, firstToken, secondToken, unigram</td></tr>
+        <tr><td>Tag features</td><td>prevTag, prevTwoTags, tagChainLength</td></tr></table></br>
+    
+    <h5>Second step post-processing: Section classification</h5></br>
+    <div class="messagebox"><ol><li>Label each section with section category using Header, Body, and Tag features</li></br><li>Some methods used:<ul><li>Classification: <a href="http://mallet.cs.umass.edu/classification.php" target="_blank">Maximum Entropy(MaxEnt)</a> models</li><li>Finding good tag sequence: Beam search</li><li>L-BFGS parameter estimation and Gaussian prior smoothing: <a href="http://mallet.cs.umass.edu" target="_blank">MALLET</a> toolkit</li></ul></br><li>Measure overall performance with 5-fold cross validation</li></ol></div></br>
+    
+    <table><caption>Table 2: Section Classification</caption>
+        <tr><th>Type</th><th>Features</th></tr>
+        <tr><td>Header features</td><td>Same as Text features, only the header line is used</td></tr>
+        <tr><td>Body features</td><td>avgLineLength, numLines, docPosition, containsList, unigram</td></tr>
+        <tr><td>Tag features</td><td>prevTag, tagHistUnigram, tagChainLength</td></tr></table></br></br>
+    
+    <h3>Sentence segmentation</h3>
+    <div class="section"><b><ul><li>Goal:</b> chop text out into individual sentences to be able to identify individual sentences as <b>positive</b> or <b>negative</b></li><li>Identify boundaries of sentences in section bodies using <a href="http://opennlp.apache.org" target="_blank">OpenNLP sentence chunker</a></li></ul></div></br></br>
+    
+    <h3>Recommendation Extraction</h3>
+    <div class="img"><img src="recommender.jpg" alt="Recommendation Extraction"></div></br>
+    <center><b>Goal:</b> label each sentence as positive or negative recommendation sentence</center></br>
+        
+    <h4>Creating feature vector</h4>
+        
+    <div class="section">A <b>feature vector</b> is created based on the characteristics and content of the sentences in the report, and includes:
+        <table><caption>Table 3: Feature Vector</caption>
+        <tr><th>Category</th><th>Feature Type</th><th>Type of variable</th><th>Dimension</th></tr>
+        <tr><td>Baseline (B)</td><td>unigram</td><td>string</td><td>num of words</td><tr>
+        <tr><td>Ngram (N)</td><td>bigram</td><td>string</td><td>num of bigrams</td><tr>
+        <tr><td>Ngram (N)</td><td>trigram</td><td>string</td><td>num of trigrams</td><tr>
+        <tr><td>Syntactic (S)</td><td>tense</td><td>categorical</td><td>num of tenses</td><tr>
+       <tr><td> Syntactic (S)</td><td>stemmedVerb</td><td>string</td><td>num unique stemmed verbs</td><tr>
+        <tr><td>Syntactic (S)</td><td>includesModalVerb</td><td>binary</td><td>num sentences</td><tr>
+        <tr><td>Syntactic (S)</td><td>includesTemporalPhrase</td><td>binary</td><td>num sentences</td><tr>
+        <tr><td>Knowledge (K)</td><td>UMLSConcept</td><td>binary</td><td>num UMLS concepts</td><tr>
+        <tr><td>Structural (St)</td><td>sectionType</td><td>binary</td><td>num section types</td><tr></table></br>
+        <center><h4>Explanation of variables:</h4></center>
+       <div class="messagebox">
+           
+        <ol><li><b>Baseline:</b> Unigrams, single words.</li></br>
+        
+        <li><b>Ngram:</b> Bigrams &#38; trigrams, i.e. sequence of two and three words.</li></br>
+        
+        <li><b>Syntactic:</b> Part of speech tags defined by passing <b>unigrams</b> into <a href="http://nlp.stanford.edu/software/tagger.shtml" target="_blank">Stanford POS tagger.</a> The following features (variables) are then created:<ul>
+            <li><b>tense:</b> Tense of a sentence (past, present, future, past-participle etc.)</li>
+            <li><b>stemmedVerb:</b> Strips away the tense of a <b>verb</b> to give only the central meaning. Done by passing features of verbs into <a href="http://tartarus.org/martin/PorterStemmer/index-old.html" target="_blank">Porter Stemmer</a></li>
+            <li><b>includesModalVerb:</b> Whether a sentence contains a <a href="http://en.wikipedia.org/wiki/Modal_verb" target="_blank">Modal Verb</a>, (e.g. "might", "may","shall")</li>
+            <li><b>includesTemporalPhrase:</b> Whether a sentence contains a <a href="http://en.wikipedia.org/wiki/Temporal_expressions" target="_blank">Temporal Phrase</a>, (e.g. "for 15 minutes", "December 2012")</li></ul></br>
+        
+        <li><b>Knowledge-based: </b><a href="http://www.nlm.nih.gov/research/umls/" target="_blank">UMLS concepts</a> (medical terms) are extracted from report text through processing with <a href="http://metamap.nlm.nih.gov/" target="_blank">MetaMap</a> (a tool created by <a href="http://www.nlm.nih.gov/" target="_blank">NLM</a>) to map strings in free text to biomedical concepts in database. Synonymous concepts are grouped together with <a href="http://atlas.ahc.umn.edu/umls_similarity//faq.html" target="_blank">Concept Unique Identifier (CUI).</a>
+            <ul><li><b>UMLSconcept:</b> Matrix of indicators of UMLS concepts</li></ul></li></br>
+        
+        <li><b>Structural:</b> Each of the 11 sections is labelled and every line is matched to a section.
+            <ul><li><b>sectionType:</b> Matrix of indicators of whether line is in particular section (e.g. background, findings).</li></ul></li></ol></div></div></br></br>
+    
+       <h4>Classifier training</h4></br>
+       <h5>Model Selection</h5>
+       
+       <div class="section">
+           <div class="listitem">Feature set size and type selection (subset selection).</div></br>
+           <b>Problem:</b> Model too sparse.</br>
+           <b>Goal:</b> Select most predictive variables to incorporate in final model.</br>
+           <b>Steps:</b></br>
+           <ol><li>Code distinct features to create huge design matrix.</li>
+               <li>Stepwise variable selection to select number of variables (N) for baseline (unigrams).</li>
+               <li>Stepwise variable selection to select combination of features.</li>
+               <li>Rank features using 5-fold cross validation using F-score.</li></ol>
+           <b>Results:</b>Unigram (N=200) has highest F-score, so use that as baseline. Baseline+Syntactic and Baseline+Structural both give slightly improved predictability.</div></br>
+    
+        <div class="section">
+           <div class="listitem">Data imbalance experiments</div></br>
+           <b>Problem:</b> Proportion of positive: negative sentences is very low (1:165).</br>
+           <b>Goal:</b> to select a ratio of positive: negative sentences that gives the optimal recall, precision &#38; f-score.</br>
+            <b>Steps:</b></br>
+           <ol><li>Create feature vector for each sentence.</li>
+           <li>Train 165 classifiers, each with ratio of i:1 negative: positive sentences, i = 1 to 165.</br>
+           For training fold, all positive sentences are used, while negative sentences are randomly selected to give the ratio i:1</br>
+           For test fold, all negative sentences are included (all 165 exp have same test set)</br></li></ol>
+           <b>Results:</b> When sets are balanced, recall is high, precision is low. As i increases, recall decreases, precision increases slowly. i = 44 has most balanced precision &#38; recall while i = 9 has highest F-score.</div></br></br>
+       
+       <h5>Error Analysis</h5>
+       <div class="section">
+           <ul><li>5-fold cross validation (few positive sentences)</li><li>Criteria used include: false positives, false negatives, precision, recall, F-score</li></ul></br>
+           
+       </div></div>
+  
+  <div id="footer"> This website is run and maintained by <a href="http://staff.washington.edu/wlktan/" target="_blank">Katherine Tan</a>, UW BIOST graduate student. Email wlktan {at} uw {dot} edu for questions or comments.</div>
+
+ </div>
+<!-- End Wrapper -->
+</body>
+</html>
